@@ -1,0 +1,146 @@
+package org.vladproj.server;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.vladproj.entity.ClientInfo;
+import org.vladproj.entity.UserAction;
+import org.vladproj.parser.ClientBufferParser;
+
+import java.io.*;
+import java.net.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+public class ServerTcpThread extends Server {
+    private static final Logger log = LogManager.getLogger();
+    private static final ClientBufferParser parser = new ClientBufferParser();
+    private static final int THREAD_NUM = 5;
+    private static final int TCP_SOCKET_PORT = 5000;
+    private ExecutorService executor;
+    private ServerSocket serverSocket;
+    private volatile boolean isRunning = true;
+
+
+    public ServerTcpThread(String name) {
+        super(name);
+        try {
+            this.serverSocket = new ServerSocket(TCP_SOCKET_PORT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        executor = Executors.newFixedThreadPool(THREAD_NUM);
+        try {
+            log.info("Server start with ip {} on port: {}", InetAddress.getLocalHost(), TCP_SOCKET_PORT);
+        } catch (UnknownHostException e) {
+            log.fatal("Cannot find ipv4 of server");
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    public boolean doLogin(String username, ClientInfo clientInfo) {
+        if (clients.containsKey(username)) {
+            log.warn("There is user in hashmap with username: {}", username);
+            return false;
+        }
+        clients.put(username, clientInfo);
+        log.info("Add user {} successful", username);
+        return true;
+    }
+
+    public boolean doLogout(String username) {
+        if (!clients.containsKey(username)) {
+            log.warn("There is no user in hashmap with username: {}", username);
+            return true;
+        }
+        clients.remove(username);
+        log.info("Logout user {} successful", username);
+        return true;
+    }
+
+    public void run() {
+        log.info("Сервер TCP запущен и ожидает подключений...");
+
+        try {
+            while (isRunning) {
+                Socket clientSocket = serverSocket.accept();
+                executor.submit(() -> handleClient(clientSocket));
+            }
+        } catch (SocketException e) {
+            if (!isRunning) {
+                log.info("Сервер успешно остановлен.");
+            } else {
+                log.error("Ошибка сокета: ", e);
+            }
+        } catch (IOException e) {
+            log.error("Ошибка ввода-вывода: ", e);
+        } finally {
+            executor.shutdown();
+            try {
+                if (!executor.awaitTermination(20, TimeUnit.SECONDS)){
+                    executor.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                log.fatal("Программа завершена извне", e);
+                executor.shutdownNow();
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    private void handleClient(Socket clientSocket) {
+        try (clientSocket;
+             BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+             PrintWriter writer = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()), true)) {
+
+            String line = reader.readLine();
+            if (line == null || line.isBlank()) {
+                log.error("Получено пустое сообщение от {}", clientSocket.getInetAddress());
+                writer.println("Error: empty message");
+                return;
+            }
+
+            String[] data = parser.parseClient(line);
+            if (data == null) {
+                log.error("Некорректный формат данных: {}", line);
+                writer.println("Error: incorrect packet data");
+                return;
+            }
+
+            UserAction.find(data[0]).ifPresentOrElse(
+                    action -> {
+                        ClientInfo client = new ClientInfo(clientSocket.getInetAddress(), Integer.parseInt(data[2]));
+                        process(action, data[1], client);
+                    },
+                    () -> {
+                        log.error("Неизвестное действие: {}", data[0]);
+                        writer.println("Error: incorrect packet type");
+                    }
+            );
+
+        } catch (IOException e) {
+            log.error("Ошибка при работе с клиентом: ", e);
+            e.printStackTrace();
+        }
+    }
+
+    public void process(UserAction action, String username, ClientInfo client) {
+        switch (action) {
+            case REGISTER -> doLogin(username, client);
+            case LOGOUT   -> doLogout(username);
+            default       -> throw new IllegalArgumentException("Unexpected value: " + action);
+        }
+    }
+
+    @Override
+    public void shutdown() {
+        isRunning = false;
+        try {
+            serverSocket.close();
+            log.info("Thread {} is interrupted", Thread.currentThread().getName());
+        } catch (IOException e) {
+            log.error("Thread {} is crushed", Thread.currentThread().getName());
+            Thread.currentThread().interrupt();
+        }
+    }
+}
