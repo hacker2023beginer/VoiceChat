@@ -27,6 +27,7 @@ public class ServerTcpThread extends Server {
         try {
             this.serverSocket = new ServerSocket(TCP_SOCKET_PORT);
         } catch (IOException e) {
+            log.fatal("Cannot start client with server_port {}", TCP_SOCKET_PORT);
             throw new RuntimeException(e);
         }
         executor = Executors.newFixedThreadPool(THREAD_NUM);
@@ -51,7 +52,7 @@ public class ServerTcpThread extends Server {
     public boolean doLogout(String username) {
         if (!clients.containsKey(username)) {
             log.warn("There is no user in hashmap with username: {}", username);
-            return true;
+            return false;
         }
         clients.remove(username);
         log.info("Logout user {} successful", username);
@@ -96,40 +97,56 @@ public class ServerTcpThread extends Server {
             String line = reader.readLine();
             if (line == null || line.isBlank()) {
                 log.error("Получено пустое сообщение от {}", clientSocket.getInetAddress());
-                writer.println("Error: empty message");
+                writer.println("Error empty message");
                 return;
             }
 
+            //data[0] - method type; data[1] - username; data[2] - port
             String[] data = parser.parseClient(line);
-            if (data == null) {
+            if (data == null || data.length < 3) {
                 log.error("Некорректный формат данных: {}", line);
-                writer.println("Error: incorrect packet data");
+                writer.println("Error incorrect packet data");
                 return;
             }
 
             UserAction.find(data[0]).ifPresentOrElse(
                     action -> {
                         ClientInfo client = new ClientInfo(clientSocket.getInetAddress(), Integer.parseInt(data[2]));
-                        process(action, data[1], client);
+                        try {
+                            process(action, data[1], client);
+                        } catch (IllegalArgumentException e) {
+                            writer.println("Error illegal function");
+                        }
                     },
                     () -> {
                         log.error("Неизвестное действие: {}", data[0]);
-                        writer.println("Error: incorrect packet type");
+                        writer.println("Error incorrect packet type");
                     }
             );
-
+            writer.println("OK operation complete successful");
         } catch (IOException e) {
             log.error("Ошибка при работе с клиентом: ", e);
             e.printStackTrace();
         }
     }
 
-    public void process(UserAction action, String username, ClientInfo client) {
+    public boolean process(UserAction action, String username, ClientInfo client) {
         switch (action) {
-            case REGISTER -> doLogin(username, client);
-            case LOGOUT   -> doLogout(username);
+            case REGISTER -> {
+                if (!doLogin(username, client)){
+                    log.error("Login method doesn't complete correct");
+                    return false;
+                }
+            }
+            case LOGOUT   -> {
+                if (!doLogout(username)){
+                    log.error("Logout method doesn't complete correct");
+                    return false;
+                }
+            }
             default       -> throw new IllegalArgumentException("Unexpected value: " + action);
         }
+        return true;
     }
 
     @Override
