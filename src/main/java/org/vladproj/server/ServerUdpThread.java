@@ -86,6 +86,7 @@ public class ServerUdpThread extends Server {
         DatagramPacket sendingPacket = new DatagramPacket(audioData, audioData.length, targetClientInfo.getAddress(), targetClientInfo.getUdpPort());
         try {
             socket.send(sendingPacket);
+            log.info("Send {}", new String(sendingPacket.getData()));
         } catch (IOException e) {
             if (!isRunning) {
                 return;

@@ -3,6 +3,7 @@ package org.vladproj.client;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vladproj.entity.UserAction;
+import org.vladproj.exception.TcpClientException;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -19,13 +20,13 @@ public class TcpClient {
     private String username;
     private Socket socket;
 
-    public TcpClient(InetAddress SERVER_IP, int SERVER_PORT, String username, int UDP_CLIENT_PORT) {
+    public TcpClient(InetAddress serverIp, int serverPort, String username, int udpClientPort) {
         log.info("TcpClient is started");
-        this.SERVER_IP = SERVER_IP;
-        this.SERVER_PORT = SERVER_PORT;
+        this.SERVER_IP = serverIp;
+        this.SERVER_PORT = serverPort;
         this.username = username;
-        this.UDP_CLIENT_PORT = UDP_CLIENT_PORT;
-        log.info("Client starts on server_ip {} with server_port {}", SERVER_IP, SERVER_PORT);
+        this.UDP_CLIENT_PORT = udpClientPort;
+        log.info("Client starts on server_ip {} with server_port {}", serverIp, serverPort);
     }
 
     public boolean register() {
@@ -33,7 +34,7 @@ public class TcpClient {
             this.socket = new Socket(SERVER_IP, SERVER_PORT);
         } catch (IOException e) {
             log.fatal("Cannot start client on server_ip {} with server_port {}", SERVER_IP, SERVER_PORT);
-            throw new RuntimeException(e);
+            throw new TcpClientException(e);
         }
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
              PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true)) {

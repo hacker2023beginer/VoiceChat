@@ -1,0 +1,58 @@
+package org.vladproj;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.vladproj.client.TcpClient;
+import org.vladproj.server.ServerTcpThread;
+import org.vladproj.server.ServerUdpThread;
+
+import java.net.InetAddress;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+public class TcpIntegrationTest {
+    private ServerTcpThread tcpThread;
+    private ServerUdpThread udpThread;
+
+    @BeforeAll
+    void setup() {
+        tcpThread = new ServerTcpThread("TCP");
+        udpThread = new ServerUdpThread("UDP");
+
+        tcpThread.start();
+        udpThread.start();
+
+        sleep(300);
+    }
+
+    @AfterAll
+    void shutdown() {
+        tcpThread.shutdown();
+        udpThread.shutdown();
+    }
+
+    @Test
+    void shouldClientRegisterSuccessfully(){
+        TcpClient client = new TcpClient(
+                InetAddress.getLoopbackAddress(),
+                5000,
+                "Vlados",
+                6000
+        );
+        boolean result = client.register();
+
+        assertTrue(result, "Client should register");
+
+        assertNotNull(tcpThread.getClients().get("Vlados"));
+    }
+
+    private void sleep(long ms) {
+        try {
+            Thread.currentThread().sleep(ms);
+        } catch (InterruptedException ignored) {}
+    }
+}

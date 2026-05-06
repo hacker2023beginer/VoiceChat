@@ -12,7 +12,7 @@ public class App {
         server.start();
         Scanner sc = new Scanner(System.in);
         String command = sc.nextLine();
-        while (!command.toLowerCase().equals(STOP_WORD)) {
+        while (!command.equalsIgnoreCase(STOP_WORD)) {
             command = sc.nextLine();
         }
         server.shutdown();

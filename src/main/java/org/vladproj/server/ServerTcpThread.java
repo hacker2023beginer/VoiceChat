@@ -4,10 +4,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vladproj.entity.ClientInfo;
 import org.vladproj.entity.UserAction;
+import org.vladproj.exception.ServerTcpException;
 import org.vladproj.parser.ClientBufferParser;
 
 import java.io.*;
 import java.net.*;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -28,7 +30,7 @@ public class ServerTcpThread extends Server {
             this.serverSocket = new ServerSocket(TCP_SOCKET_PORT);
         } catch (IOException e) {
             log.fatal("Cannot start client with server_port {}", TCP_SOCKET_PORT);
-            throw new RuntimeException(e);
+            throw new ServerTcpException(e);
         }
         executor = Executors.newFixedThreadPool(THREAD_NUM);
         try {
@@ -101,13 +103,15 @@ public class ServerTcpThread extends Server {
                 return;
             }
 
-            //data[0] - method type; data[1] - username; data[2] - port
-            String[] data = parser.parseClient(line);
-            if (data == null || data.length < 3) {
+            Optional<String[]> optionalData = parser.parseClient(line);
+            if (optionalData.isEmpty() || optionalData.get().length < 3) {
                 log.error("Некорректный формат данных: {}", line);
                 writer.println("Error incorrect packet data");
                 return;
             }
+
+            //data[0] - method type; data[1] - username; data[2] - port
+            String[] data = optionalData.get();
 
             UserAction.find(data[0]).ifPresentOrElse(
                     action -> {
