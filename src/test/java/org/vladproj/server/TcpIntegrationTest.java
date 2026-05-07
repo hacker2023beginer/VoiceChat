@@ -1,12 +1,10 @@
-package org.vladproj;
+package org.vladproj.server;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.vladproj.client.TcpClient;
-import org.vladproj.server.ServerTcpThread;
-import org.vladproj.server.ServerUdpThread;
 
 import java.net.InetAddress;
 
@@ -14,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class TcpIntegrationTest {
+class TcpIntegrationTest {
     private ServerTcpThread tcpThread;
     private ServerUdpThread udpThread;
 
@@ -52,7 +50,9 @@ public class TcpIntegrationTest {
 
     private void sleep(long ms) {
         try {
-            Thread.currentThread().sleep(ms);
-        } catch (InterruptedException ignored) {}
+            Thread.sleep(ms);
+        } catch (InterruptedException ignored) {
+            Thread.currentThread().interrupt();
+        }
     }
 }

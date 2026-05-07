@@ -3,10 +3,13 @@ package org.vladproj.server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vladproj.entity.ClientInfo;
+import org.vladproj.entity.VoiceUdpPacket;
 import org.vladproj.parser.VoiceBufferParser;
+import org.vladproj.serializer.VoiceUdpPacketSerializer;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.Arrays;
 
 //У пользователя есть уникальный никнейм
 //Следовательно, поиск ведется по никнейму. Быстрый доступ по HashMap
@@ -65,28 +68,20 @@ public class ServerUdpThread extends Server {
 
     private void handlePacket(DatagramPacket packet) {
         log.info("Method handlePacket started");
-        byte[] voiceBuffer = packet.getData();
-        int packetLength = packet.getLength();
-        int bound = parser.findDataBound(voiceBuffer, packetLength);
-        if (bound <= 0) {
-            log.warn("Bad message from client");
-            return;
-        }
-        byte[] audioData = parser.findAudioData(voiceBuffer, bound, packetLength);
-        String targetUsername = parser.findUsername(voiceBuffer, bound);
-        if (audioData.length == 0) {
-            log.info("There is no voice data");
-            return;
-        }
+        byte[] raw = Arrays.copyOf(packet.getData(), packet.getLength());
+        VoiceUdpPacketSerializer serializer = new VoiceUdpPacketSerializer();
+        VoiceUdpPacket voiceUdpPacket = serializer.deserialize(raw);
+        String targetUsername = voiceUdpPacket.getUsername();
         ClientInfo targetClientInfo = clients.get(targetUsername);
         if (targetClientInfo == null) {
             log.warn("There is no user in hashmap with username: {}", targetUsername);
             return;
         }
+        byte[] audioData = voiceUdpPacket.getData();
         DatagramPacket sendingPacket = new DatagramPacket(audioData, audioData.length, targetClientInfo.getAddress(), targetClientInfo.getUdpPort());
         try {
             socket.send(sendingPacket);
-            log.info("Send {}", new String(sendingPacket.getData()));
+            log.info("Send data successfully");
         } catch (IOException e) {
             if (!isRunning) {
                 return;

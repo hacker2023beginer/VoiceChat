@@ -1,4 +1,4 @@
-package org.vladproj;
+package org.vladproj.server;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -7,8 +7,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.vladproj.client.TcpClient;
 import org.vladproj.client.UdpReceiver;
 import org.vladproj.client.UdpSender;
-import org.vladproj.server.ServerTcpThread;
-import org.vladproj.server.ServerUdpThread;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -17,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class UdpIntegrationTest {
+class UdpIntegrationTest {
     private static final String USERNAME = "Vlados";
     private static final String MESSAGE = "hello";
     private ServerUdpThread udpThread;
@@ -49,7 +47,9 @@ public class UdpIntegrationTest {
     private void sleep(long ms) {
         try {
             Thread.sleep(ms);
-        } catch (InterruptedException ignored) {}
+        } catch (InterruptedException ignored) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     @Test

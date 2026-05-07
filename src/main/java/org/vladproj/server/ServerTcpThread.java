@@ -42,11 +42,11 @@ public class ServerTcpThread extends Server {
     }
 
     public boolean doLogin(String username, ClientInfo clientInfo) {
-        if (clients.containsKey(username)) {
+        ClientInfo value = clients.putIfAbsent(username, clientInfo);
+        if (value != null) {
             log.warn("There is user in hashmap with username: {}", username);
             return false;
         }
-        clients.put(username, clientInfo);
         log.info("Add user {} successful", username);
         return true;
     }
