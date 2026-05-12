@@ -4,7 +4,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vladproj.entity.ClientInfo;
 import org.vladproj.entity.VoiceUdpPacket;
-import org.vladproj.parser.VoiceBufferParser;
 import org.vladproj.serializer.VoiceUdpPacketSerializer;
 
 import java.io.IOException;
@@ -16,7 +15,7 @@ import java.util.Arrays;
 //Не HashSet так как у него нет операций получения элемента, без использования цикла с итерациями
 public class ServerUdpThread extends Server {
     private static final Logger log = LogManager.getLogger();
-    private static final VoiceBufferParser parser = new VoiceBufferParser();
+    private static final VoiceUdpPacketSerializer serializer = new VoiceUdpPacketSerializer();
     private static final int UDP_SOCKET_PORT = 4445;
     private static final int BUFFER_LENGTH = 2048;
     private volatile boolean isRunning = true;
@@ -45,10 +44,10 @@ public class ServerUdpThread extends Server {
         while (isRunning) {
             try {
                 DatagramPacket packet = new DatagramPacket(voiceBuffer, BUFFER_LENGTH);
+                socket.receive(packet);
                 InetAddress senderAddr = packet.getAddress();
                 int senderPort = packet.getPort();
                 log.info("Sender address: {}. Sender port: {}", senderAddr, senderPort);
-                socket.receive(packet);
                 handlePacket(packet);
             } catch (IOException e) {
                 if (!isRunning) {
@@ -69,9 +68,16 @@ public class ServerUdpThread extends Server {
     private void handlePacket(DatagramPacket packet) {
         log.info("Method handlePacket started");
         byte[] raw = Arrays.copyOf(packet.getData(), packet.getLength());
-        VoiceUdpPacketSerializer serializer = new VoiceUdpPacketSerializer();
         VoiceUdpPacket voiceUdpPacket = serializer.deserialize(raw);
-        String targetUsername = voiceUdpPacket.getUsername();
+        switch (voiceUdpPacket.getPacketType()) {
+            case VOICE -> handleVoicePacket(voiceUdpPacket);
+        }
+        log.info("Method handlePacket ended");
+    }
+
+    public void handleVoicePacket(VoiceUdpPacket voiceUdpPacket) {
+        log.info("Handle method for voice packet is started");
+        String targetUsername = voiceUdpPacket.getDestUsername();
         ClientInfo targetClientInfo = clients.get(targetUsername);
         if (targetClientInfo == null) {
             log.warn("There is no user in hashmap with username: {}", targetUsername);
@@ -88,6 +94,6 @@ public class ServerUdpThread extends Server {
             }
             e.printStackTrace();
         }
-        log.info("Method handlePacket ended");
+        log.info("Handle method for voice packet is ended");
     }
 }

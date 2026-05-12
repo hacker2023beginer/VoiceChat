@@ -16,12 +16,19 @@ public class VoiceUdpPacketSerializer {
     private static final int USERNAME_LENGTH_BYTE_LENGTH = 4;
 
     public byte[] serialize(VoiceUdpPacket packet) {
-        byte[] usernameInBytes = packet.getUsername().getBytes(StandardCharsets.UTF_8);
-        int packetLength = TYPE_BYTE_LENGTH + USERNAME_LENGTH_BYTE_LENGTH + usernameInBytes.length + packet.getData().length;
+        byte[] destUsernameInBytes = packet.getDestUsername().getBytes(StandardCharsets.UTF_8);
+        byte[] srcUsernameInBytes = packet.getSrcUsername().getBytes(StandardCharsets.UTF_8);
+
+        int packetLength = TYPE_BYTE_LENGTH + USERNAME_LENGTH_BYTE_LENGTH * 2 +
+                destUsernameInBytes.length + srcUsernameInBytes.length
+                + packet.getData().length;
+
         ByteBuffer buffer = ByteBuffer.allocate(packetLength);
         buffer.put((byte) packet.getPacketType().getValue());
-        buffer.putInt(usernameInBytes.length);
-        buffer.put(usernameInBytes);
+        buffer.putInt(destUsernameInBytes.length);
+        buffer.put(destUsernameInBytes);
+        buffer.putInt(srcUsernameInBytes.length);
+        buffer.put(srcUsernameInBytes);
         buffer.put(packet.getData());
         return buffer.array();
     }
@@ -36,15 +43,23 @@ public class VoiceUdpPacketSerializer {
             log.error("Incorrect type of packet");
             throw new VoiceUdpSerializerException("Incorrect num of packet: " + numOfType);
         }
-        int usernameLength = buffer.getInt();
-        byte[] byteUsername = new byte[usernameLength];
-        buffer.get(byteUsername);
-        String username = new String(byteUsername, StandardCharsets.UTF_8);
+
+        int destUsernameLength = buffer.getInt();
+        byte[] byteDestUsername = new byte[destUsernameLength];
+        buffer.get(byteDestUsername);
+        String destUsername = new String(byteDestUsername, StandardCharsets.UTF_8);
+
+        int srcUsernameLength = buffer.getInt();
+        byte[] byteSrcUsername = new byte[srcUsernameLength];
+        buffer.get(byteSrcUsername);
+        String srcUsername = new String(byteSrcUsername, StandardCharsets.UTF_8);
+
         byte[] voiceData = new byte[buffer.remaining()];
         buffer.get(voiceData);
         return VoiceUdpPacket.builder()
                 .packetType(optionalType.get())
-                .username(username)
+                .destUsername(destUsername)
+                .srcUsername(srcUsername)
                 .data(voiceData)
                 .build();
     }

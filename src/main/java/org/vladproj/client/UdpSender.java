@@ -34,7 +34,7 @@ public class UdpSender {
         if (targetUsername.isBlank()) return;
         VoiceUdpPacket voiceUdpPacket = VoiceUdpPacket.builder()
                 .packetType(DEFAULT_PACKET_TYPE)
-                .username(targetUsername)
+                .destUsername(targetUsername)
                 .data(audioData)
                 .build();
         VoiceUdpPacketSerializer serializer = new VoiceUdpPacketSerializer();

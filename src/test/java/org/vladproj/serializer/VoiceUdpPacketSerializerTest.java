@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class VoiceUdpPacketSerializerTest {
-    private VoiceUdpPacket packet = new VoiceUdpPacket(PacketType.VOICE, "Vlados", "Hello".getBytes(StandardCharsets.UTF_8));
+    private VoiceUdpPacket packet = new VoiceUdpPacket(PacketType.VOICE, "Vlados", "Roma", "Hello".getBytes(StandardCharsets.UTF_8));
     private VoiceUdpPacketSerializer serializer = new VoiceUdpPacketSerializer();
 
     @Test
@@ -20,8 +20,11 @@ class VoiceUdpPacketSerializerTest {
         VoiceUdpPacket newPacket = serializer.deserialize(array);
         assertAll(
                 () -> assertEquals(packet.getPacketType(), newPacket.getPacketType()),
-                () -> assertEquals(packet.getUsername(), newPacket.getUsername()),
+                () -> assertEquals(packet.getDestUsername(), newPacket.getDestUsername()),
+                () -> assertEquals(packet.getSrcUsername(), newPacket.getSrcUsername()),
                 () -> assertArrayEquals(packet.getData(), newPacket.getData())
         );
     }
+
+
 }

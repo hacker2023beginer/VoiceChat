@@ -3,7 +3,7 @@ package org.vladproj.client;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.vladproj.exception.UdpReceiverException;
+import org.vladproj.exception.DatagramSocketException;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -33,7 +33,7 @@ public class UdpReceiver extends Thread {
             log.info("Client with udp port {} is created", UDP_CLIENT_PORT);
         } catch (Exception e) {
             log.fatal("Cannot find localhost address or port is not available");
-            throw new UdpReceiverException(e);
+            throw new DatagramSocketException(e);
         }
     }
 
