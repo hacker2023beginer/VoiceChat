@@ -1,54 +1,60 @@
 package org.vladproj.server;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.vladproj.client.ClientHeartbeatThread;
 import org.vladproj.client.ClientTcp;
-import org.vladproj.client.ClientUdpReceiver;
-import org.vladproj.client.ClientUdpSender;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class UdpIntegrationTest {
+class ServerClientCleanThreadTest {
     private static final String USERNAME = "Vlados";
-    private static final String MESSAGE = "hello";
-    private ServerUdpThread udpThread;
+    private static final int CLIENT_UDP_PORT = 6000;
     private ServerTcpThread tcpThread;
-    private ClientUdpSender sender;
-    private ClientUdpReceiver receiver;
+    private ServerUdpThread udpThread;
+    private ClientHeartbeatThread heartbeatThread;
+    private ServerClientCleanThread cleanThread;
 
+    @SneakyThrows
     @BeforeAll
     void setup() {
         tcpThread = new ServerTcpThread("TCP");
         udpThread = new ServerUdpThread("UDP");
+        cleanThread = new ServerClientCleanThread("CLEAN");
+        heartbeatThread = new ClientHeartbeatThread("HEARTBEAT", ServerUdpThread.UDP_SOCKET_PORT, InetAddress.getLocalHost(), CLIENT_UDP_PORT, USERNAME);
         tcpThread.start();
         udpThread.start();
         sleep(300);
         ClientTcp client = new ClientTcp(
                 InetAddress.getLoopbackAddress(),
-                5000,
+                ServerTcpThread.TCP_SOCKET_PORT,
                 USERNAME,
-                6000
+                CLIENT_UDP_PORT
         );
         client.register();
-        try {
-            sender = new ClientUdpSender(4445, InetAddress.getLocalHost(), 6001);
-            receiver = new ClientUdpReceiver(USERNAME, 6000);
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        }
+        heartbeatThread.start();
+        cleanThread.start();
+    }
+
+    @SneakyThrows
+    @Test
+    void cleanUserSuccessfully() {
+        heartbeatThread.shutdown();
+        sleep(20000);
+        assertEquals(0, tcpThread.getClients().size());
     }
 
     @AfterAll
     void shutdown() {
-        udpThread.shutdown();
         tcpThread.shutdown();
+        udpThread.shutdown();
+        cleanThread.shutdown();
     }
 
     private void sleep(long ms) {
@@ -57,15 +63,5 @@ class UdpIntegrationTest {
         } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt();
         }
-    }
-
-    @Test
-    void shouldSendMessageSuccessful() {
-        receiver.start();
-        sleep(300);
-        sender.send(USERNAME, "test", MESSAGE.getBytes(StandardCharsets.UTF_8));
-        sleep(300);
-        assertEquals(MESSAGE, receiver.getLastMessage());
-        receiver.shutdown();
     }
 }

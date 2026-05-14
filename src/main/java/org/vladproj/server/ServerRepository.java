@@ -5,10 +5,10 @@ import org.vladproj.entity.ClientInfo;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class Server extends Thread{
+public abstract class ServerRepository extends Thread{
     protected static Map<String, ClientInfo> clients = new ConcurrentHashMap<>();
 
-    protected Server(String name) {
+    protected ServerRepository(String name) {
         super(name);
     }
 

@@ -9,33 +9,33 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 
-public class TcpClient {
+public class ClientTcp {
     private static final Logger log = LogManager.getLogger();
     private static final String PARSER_DELIMITER = " ";
-    private final InetAddress SERVER_IP;
-    private final int SERVER_PORT;
-    private final int UDP_CLIENT_PORT;
     private static final String STATUS_OK = "OK";
     private static final String STATUS_ERROR = "Error";
-    private String username;
-    private Socket socket;
+    private final InetAddress serverIp;
+    private final int serverPort;
+    private final int udpClientPort;
+    private final String username;
+    private final Socket socket;
 
-    public TcpClient(InetAddress serverIp, int serverPort, String username, int udpClientPort) {
+    public ClientTcp(InetAddress serverIp, int serverPort, String username, int udpClientPort) {
         log.info("TcpClient is started");
-        this.SERVER_IP = serverIp;
-        this.SERVER_PORT = serverPort;
+        this.serverIp = serverIp;
+        this.serverPort = serverPort;
         this.username = username;
-        this.UDP_CLIENT_PORT = udpClientPort;
+        this.udpClientPort = udpClientPort;
+        try {
+            this.socket = new Socket(this.serverIp, this.serverPort);
+        } catch (IOException e) {
+            log.fatal("Cannot start client on server_ip {} with server_port {}", this.serverIp, this.serverPort);
+            throw new TcpClientException(e);
+        }
         log.info("Client starts on server_ip {} with server_port {}", serverIp, serverPort);
     }
 
     public boolean register() {
-        try {
-            this.socket = new Socket(SERVER_IP, SERVER_PORT);
-        } catch (IOException e) {
-            log.fatal("Cannot start client on server_ip {} with server_port {}", SERVER_IP, SERVER_PORT);
-            throw new TcpClientException(e);
-        }
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
              PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true)) {
             StringBuilder request = new StringBuilder();
@@ -43,7 +43,7 @@ public class TcpClient {
             request.append(PARSER_DELIMITER);
             request.append(username);
             request.append(PARSER_DELIMITER);
-            request.append(UDP_CLIENT_PORT);
+            request.append(udpClientPort);
             writer.println(request);
             String response = reader.readLine();
             if (response == null || response.isBlank()){

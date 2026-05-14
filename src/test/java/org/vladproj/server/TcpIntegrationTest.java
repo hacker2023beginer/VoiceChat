@@ -4,7 +4,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.vladproj.client.TcpClient;
+import org.vladproj.client.ClientTcp;
 
 import java.net.InetAddress;
 
@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TcpIntegrationTest {
+    private static final String USERNAME = "Vlados";
     private ServerTcpThread tcpThread;
     private ServerUdpThread udpThread;
 
@@ -35,17 +36,17 @@ class TcpIntegrationTest {
 
     @Test
     void shouldClientRegisterSuccessfully(){
-        TcpClient client = new TcpClient(
+        ClientTcp client = new ClientTcp(
                 InetAddress.getLoopbackAddress(),
                 5000,
-                "Vlados",
+                USERNAME,
                 6000
         );
         boolean result = client.register();
 
         assertTrue(result, "Client should register");
 
-        assertNotNull(tcpThread.getClients().get("Vlados"));
+        assertNotNull(tcpThread.getClients().get(USERNAME));
     }
 
     private void sleep(long ms) {

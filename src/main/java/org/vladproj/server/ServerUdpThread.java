@@ -13,10 +13,10 @@ import java.util.Arrays;
 //У пользователя есть уникальный никнейм
 //Следовательно, поиск ведется по никнейму. Быстрый доступ по HashMap
 //Не HashSet так как у него нет операций получения элемента, без использования цикла с итерациями
-public class ServerUdpThread extends Server {
+public class ServerUdpThread extends ServerRepository {
     private static final Logger log = LogManager.getLogger();
     private static final VoiceUdpPacketSerializer serializer = new VoiceUdpPacketSerializer();
-    private static final int UDP_SOCKET_PORT = 4445;
+    protected static final int UDP_SOCKET_PORT = 4445;
     private static final int BUFFER_LENGTH = 2048;
     private volatile boolean isRunning = true;
     private DatagramSocket socket;
@@ -60,23 +60,21 @@ public class ServerUdpThread extends Server {
         log.info("End sending voice message. Thread {} is interrupted", Thread.currentThread().getName());
     }
 
-    public void shutdown() {
-        isRunning = false;
-        socket.close();
-    }
-
     private void handlePacket(DatagramPacket packet) {
         log.info("Method handlePacket started");
         byte[] raw = Arrays.copyOf(packet.getData(), packet.getLength());
         VoiceUdpPacket voiceUdpPacket = serializer.deserialize(raw);
         switch (voiceUdpPacket.getPacketType()) {
             case VOICE -> handleVoicePacket(voiceUdpPacket);
+            case PING -> handlePingPacket(voiceUdpPacket);
+            case DISCONNECT -> handleDisconnectPacket(voiceUdpPacket);
+            default -> {}
         }
         log.info("Method handlePacket ended");
     }
 
-    public void handleVoicePacket(VoiceUdpPacket voiceUdpPacket) {
-        log.info("Handle method for voice packet is started");
+    private void handleVoicePacket(VoiceUdpPacket voiceUdpPacket) {
+        log.info("UDP server handle method for voice packet is started");
         String targetUsername = voiceUdpPacket.getDestUsername();
         ClientInfo targetClientInfo = clients.get(targetUsername);
         if (targetClientInfo == null) {
@@ -95,5 +93,31 @@ public class ServerUdpThread extends Server {
             e.printStackTrace();
         }
         log.info("Handle method for voice packet is ended");
+    }
+
+    private void handlePingPacket(VoiceUdpPacket packet) {
+        log.info("Handle heartbeat packet");
+        String srcUsername = packet.getSrcUsername();
+        ClientInfo clientInfo = clients.get(srcUsername);
+        if (clientInfo == null) {
+            log.warn("User with username \"{}\" doesn't exist in map", srcUsername);
+            return;
+        }
+        clientInfo.setLastSeen(System.currentTimeMillis());
+    }
+
+    private void handleDisconnectPacket(VoiceUdpPacket packet) {
+        log.info("Handle disconnect packet");
+        clients.remove(packet.getSrcUsername());
+        log.info("Disconnect user {}", packet.getSrcUsername());
+    }
+
+    public void shutdown() {
+        isRunning = false;
+        socket.close();
+    }
+
+    public DatagramSocket getSocket() {
+        return socket;
     }
 }

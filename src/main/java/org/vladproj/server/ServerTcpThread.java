@@ -14,11 +14,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class ServerTcpThread extends Server {
+public class ServerTcpThread extends ServerRepository {
     private static final Logger log = LogManager.getLogger();
     private static final ClientBufferParser parser = new ClientBufferParser();
     private static final int THREAD_NUM = 5;
-    private static final int TCP_SOCKET_PORT = 5000;
+    protected static final int TCP_SOCKET_PORT = 5000;
     private ExecutorService executor;
     private ServerSocket serverSocket;
     private volatile boolean isRunning = true;
@@ -115,7 +115,7 @@ public class ServerTcpThread extends Server {
 
             UserAction.find(data[0]).ifPresentOrElse(
                     action -> {
-                        ClientInfo client = new ClientInfo(clientSocket.getInetAddress(), Integer.parseInt(data[2]));
+                        ClientInfo client = new ClientInfo(clientSocket.getInetAddress(), Integer.parseInt(data[2]), System.currentTimeMillis());
                         try {
                             process(action, data[1], client);
                         } catch (IllegalArgumentException e) {
