@@ -18,7 +18,7 @@ public class ServerTcpThread extends ServerRepository {
     private static final Logger log = LogManager.getLogger();
     private static final ClientBufferParser parser = new ClientBufferParser();
     private static final int THREAD_NUM = 5;
-    protected static final int TCP_SOCKET_PORT = 5000;
+    public static final int TCP_SOCKET_PORT = 5000;
     private ExecutorService executor;
     private ServerSocket serverSocket;
     private volatile boolean isRunning = true;

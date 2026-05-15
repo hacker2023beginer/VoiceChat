@@ -22,18 +22,14 @@ public class ClientUdpSender {
     private final DatagramSocket socket;
     private final int clientUdpPort;
 
-    public ClientUdpSender(int udpServerPort, InetAddress address, int port) {
-        try {
-            this.udpServerPort = udpServerPort;
-            this.serverAddress = address;
-            this.clientUdpPort = port;
-            socket = new DatagramSocket(clientUdpPort);
-        } catch (SocketException e) {
-            throw new DatagramSocketException(e);
-        }
+    public ClientUdpSender(int udpServerPort, InetAddress address, int port, DatagramSocket socket) {
+        this.udpServerPort = udpServerPort;
+        this.serverAddress = address;
+        this.clientUdpPort = port;
+        this.socket = socket;
     }
 
-    public void send (String targetUsername, String srcUsername, byte[] audioData) {
+    public void send(String targetUsername, String srcUsername, byte[] audioData) {
         if (targetUsername == null || audioData == null) return;
         if (targetUsername.isBlank()) return;
         VoiceUdpPacket voiceUdpPacket = VoiceUdpPacket.builder()

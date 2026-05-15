@@ -75,4 +75,8 @@ public class ClientHeartbeatThread extends Thread {
         socket.close();
         log.info("Shutdown heartbeat thread {}", getName());
     }
+
+    public DatagramSocket getSocket() {
+        return socket;
+    }
 }

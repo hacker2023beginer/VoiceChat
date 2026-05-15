@@ -1,5 +1,6 @@
 package org.vladproj.server;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,7 @@ import org.vladproj.client.ClientTcp;
 import org.vladproj.client.ClientUdpReceiver;
 import org.vladproj.client.ClientUdpSender;
 
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
@@ -23,6 +25,7 @@ class UdpIntegrationTest {
     private ClientUdpSender sender;
     private ClientUdpReceiver receiver;
 
+    @SneakyThrows
     @BeforeAll
     void setup() {
         tcpThread = new ServerTcpThread("TCP");
@@ -38,8 +41,10 @@ class UdpIntegrationTest {
         );
         client.register();
         try {
-            sender = new ClientUdpSender(4445, InetAddress.getLocalHost(), 6001);
-            receiver = new ClientUdpReceiver(USERNAME, 6000);
+            DatagramSocket socket1 = new DatagramSocket(6001);
+            DatagramSocket socket2 = new DatagramSocket(6000);
+            sender = new ClientUdpSender(4445, InetAddress.getLocalHost(), 6001, socket1);
+            receiver = new ClientUdpReceiver(USERNAME, 6000, socket2);
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }

@@ -16,7 +16,7 @@ import java.util.Arrays;
 public class ServerUdpThread extends ServerRepository {
     private static final Logger log = LogManager.getLogger();
     private static final VoiceUdpPacketSerializer serializer = new VoiceUdpPacketSerializer();
-    protected static final int UDP_SOCKET_PORT = 4445;
+    public static final int UDP_SOCKET_PORT = 4445;
     private static final int BUFFER_LENGTH = 2048;
     private volatile boolean isRunning = true;
     private DatagramSocket socket;
@@ -81,7 +81,7 @@ public class ServerUdpThread extends ServerRepository {
             log.warn("There is no user in hashmap with username: {}", targetUsername);
             return;
         }
-        byte[] audioData = voiceUdpPacket.getData();
+        byte[] audioData = serializer.serialize(voiceUdpPacket);
         DatagramPacket sendingPacket = new DatagramPacket(audioData, audioData.length, targetClientInfo.getAddress(), targetClientInfo.getUdpPort());
         try {
             socket.send(sendingPacket);
