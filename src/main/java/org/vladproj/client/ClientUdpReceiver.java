@@ -49,11 +49,12 @@ public class ClientUdpReceiver extends Thread {
             byte[] raw = new byte[packet.getLength()];
             System.arraycopy(packet.getData(), 0, raw, 0, packet.getLength());
             VoiceUdpPacket voicePacket = SERIALIZER.deserialize(voiceBuffer);
-            speakers.write(
-                    voicePacket.getData(),
-                    0,
-                    voicePacket.getData().length
-            );
+            // Why? Because new logic here, not loading currently
+//            speakers.write(
+//                    voicePacket.getData(),
+//                    0,
+//                    voicePacket.getData().length
+//            );
             int length = voicePacket.getData().length;
             String msg = new String(voicePacket.getData(), 0, length);
             setLastMessage(msg);
