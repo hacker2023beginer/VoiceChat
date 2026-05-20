@@ -2,15 +2,15 @@ package org.vladproj.serializer;
 
 import org.vladproj.entity.VoiceMessage;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class VoiceMessagesSerializer {
 
-    public static byte[] serialize(Map<String, VoiceMessage> map) throws IOException {
+    public static byte[] serialize(Map<String, CopyOnWriteArrayList<VoiceMessage>> map) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         DataOutputStream data = new DataOutputStream(out);
 
@@ -18,7 +18,13 @@ public class VoiceMessagesSerializer {
 
         for (var entry : map.entrySet()) {
             writeString(data, entry.getKey());
-            writeVoiceMessage(data, entry.getValue());
+
+            CopyOnWriteArrayList<VoiceMessage> list = entry.getValue();
+            data.writeInt(list.size());
+
+            for (VoiceMessage msg : list) {
+                writeVoiceMessage(data, msg);
+            }
         }
 
         return out.toByteArray();
@@ -41,4 +47,3 @@ public class VoiceMessagesSerializer {
         data.writeLong(msg.getTimestamp());
     }
 }
-

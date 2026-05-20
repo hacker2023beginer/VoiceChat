@@ -5,8 +5,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.vladproj.client.ClientHeartbeatThread;
-import org.vladproj.client.ClientTcp;
+import org.vladproj.client.connection.ClientHeartbeatThread;
+import org.vladproj.client.connection.ClientTcp;
 
 import java.net.InetAddress;
 

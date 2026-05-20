@@ -1,4 +1,4 @@
-package org.vladproj.client;
+package org.vladproj.client.connection;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,7 +27,7 @@ public class ClientHeartbeatThread extends Thread {
     private final InetAddress serverAddress;
     private final int clientUdpPort;
     private final String srcUsername;
-    private boolean running = true;
+    private volatile boolean running = true;
 
     public ClientHeartbeatThread(String name, int udpServerPort, InetAddress serverAddress, int port, String srcUsername) {
         super(name);
@@ -61,10 +61,14 @@ public class ClientHeartbeatThread extends Thread {
                 Thread.sleep(HEARTBEAT_TIME_MS);
                 log.info("Heartbeat packet from {} is sent", pingPacket.getSrcUsername());
             } catch (IOException ioe) {
+                if (!running) {
+                    break;
+                }
                 throw new DatagramSocketException(ioe);
             } catch (InterruptedException ie) {
                 log.warn("Thread {} is interrupted by some thread", getName());
                 Thread.currentThread().interrupt();
+                break;
             }
         }
         log.info("Heartbeat method run is ended");

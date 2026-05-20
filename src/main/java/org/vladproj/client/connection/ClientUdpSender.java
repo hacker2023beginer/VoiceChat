@@ -1,4 +1,4 @@
-package org.vladproj.client;
+package org.vladproj.client.connection;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 
 public class ClientUdpSender {
     private static final Logger log = LogManager.getLogger();
@@ -32,8 +31,16 @@ public class ClientUdpSender {
     public void send(String targetUsername, String srcUsername, byte[] audioData) {
         if (targetUsername == null || audioData == null) return;
         if (targetUsername.isBlank()) return;
+        sendPacket(DEFAULT_PACKET_TYPE, targetUsername, srcUsername, audioData);
+    }
+
+    public void sendDisconnect(String srcUsername) {
+        sendPacket(PacketType.DISCONNECT, "", srcUsername, new byte[0]);
+    }
+
+    private void sendPacket(PacketType packetType, String targetUsername, String srcUsername, byte[] audioData) {
         VoiceUdpPacket voiceUdpPacket = VoiceUdpPacket.builder()
-                .packetType(DEFAULT_PACKET_TYPE)
+                .packetType(packetType)
                 .destUsername(targetUsername)
                 .srcUsername(srcUsername)
                 .data(audioData)

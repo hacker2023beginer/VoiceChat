@@ -3,7 +3,7 @@ package org.vladproj.entity;
 import java.util.Optional;
 
 public enum PacketType {
-    VOICE(1), TEXT(2), PING(3), DISCONNECT(4);
+    VOICE(1), MESSAGE(2), PING(3), DISCONNECT(4);
 
     private int value;
 

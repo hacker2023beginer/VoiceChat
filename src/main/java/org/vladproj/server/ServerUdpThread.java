@@ -3,12 +3,17 @@ package org.vladproj.server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vladproj.entity.ClientInfo;
+import org.vladproj.entity.VoiceMessage;
 import org.vladproj.entity.VoiceUdpPacket;
+import org.vladproj.persistence.MessagePersistenceService;
 import org.vladproj.serializer.VoiceUdpPacketSerializer;
+import org.vladproj.server.util.ChatUtils;
 
 import java.io.IOException;
 import java.net.*;
 import java.util.Arrays;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 //У пользователя есть уникальный никнейм
 //Следовательно, поиск ведется по никнейму. Быстрый доступ по HashMap
@@ -16,6 +21,7 @@ import java.util.Arrays;
 public class ServerUdpThread extends ServerRepository {
     private static final Logger log = LogManager.getLogger();
     private static final VoiceUdpPacketSerializer serializer = new VoiceUdpPacketSerializer();
+    private static final MessagePersistenceService persistence = new MessagePersistenceService();
     public static final int UDP_SOCKET_PORT = 4445;
     private static final int BUFFER_LENGTH = 2048;
     private volatile boolean isRunning = true;
@@ -23,6 +29,7 @@ public class ServerUdpThread extends ServerRepository {
 
     public ServerUdpThread(String name) {
         super(name);
+        messages = persistence.load();
         try {
             socket = new DatagramSocket(UDP_SOCKET_PORT);
         } catch (SocketException e) {
@@ -75,6 +82,7 @@ public class ServerUdpThread extends ServerRepository {
 
     private void handleVoicePacket(VoiceUdpPacket voiceUdpPacket) {
         log.info("UDP server handle method for voice packet is started");
+        saveMessage(voiceUdpPacket);
         String targetUsername = voiceUdpPacket.getDestUsername();
         ClientInfo targetClientInfo = clients.get(targetUsername);
         if (targetClientInfo == null) {
@@ -110,6 +118,25 @@ public class ServerUdpThread extends ServerRepository {
         log.info("Handle disconnect packet");
         clients.remove(packet.getSrcUsername());
         log.info("Disconnect user {}", packet.getSrcUsername());
+    }
+
+    private void saveMessage(VoiceUdpPacket packet) {
+        String chatId = ChatUtils.buildChatId(
+                packet.getSrcUsername(),
+                packet.getDestUsername()
+        );
+
+        VoiceMessage msg = VoiceMessage.builder()
+                .id(UUID.randomUUID())
+                .sender(packet.getSrcUsername())
+                .receiver(packet.getDestUsername())
+                .data(packet.getData())
+                .timestamp(System.currentTimeMillis())
+                .build();
+
+        messages.computeIfAbsent(chatId, k -> new CopyOnWriteArrayList<>())
+                .add(msg);
+        persistence.save(messages);
     }
 
     public void shutdown() {

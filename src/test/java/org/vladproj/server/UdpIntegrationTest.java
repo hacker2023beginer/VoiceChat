@@ -5,9 +5,9 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.vladproj.client.ClientTcp;
-import org.vladproj.client.ClientUdpReceiver;
-import org.vladproj.client.ClientUdpSender;
+import org.vladproj.client.connection.ClientTcp;
+import org.vladproj.client.connection.ClientUdpReceiver;
+import org.vladproj.client.connection.ClientUdpSender;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
