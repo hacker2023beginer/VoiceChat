@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vladproj.client.voice.VoiceConfig;
+import org.vladproj.entity.PacketType;
 import org.vladproj.entity.VoiceUdpPacket;
 import org.vladproj.serializer.VoiceUdpPacketSerializer;
 
@@ -20,7 +21,7 @@ import java.util.function.Consumer;
 @Getter
 @Setter
 public class ClientUdpReceiver extends Thread {
-    private static final Logger log = LogManager.getLogger();
+    private static final Logger log = LogManager.getLogger("org.vladproj.client.connection.ClientUdpReceiver");
     private static final VoiceUdpPacketSerializer SERIALIZER = new VoiceUdpPacketSerializer();
     //public static final Map<String, List<VoiceMessage>> messages = ServerRepository.getMessages();
     private static final int BUFFER_LENGTH = 2048;
@@ -91,7 +92,7 @@ public class ClientUdpReceiver extends Thread {
     }
 
     private void playPacket(SourceDataLine speakers, VoiceUdpPacket voicePacket) {
-        if (speakers != null && voicePacket.getData() != null) {
+        if (speakers != null && voicePacket.getPacketType() == PacketType.VOICE && voicePacket.getData() != null) {
             speakers.write(voicePacket.getData(), 0, voicePacket.getData().length);
         }
     }

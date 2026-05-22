@@ -2,7 +2,7 @@ package org.vladproj.client.main;
 
 import org.vladproj.client.ui.VoiceChatUI;
 
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 public class Main {
 

@@ -18,7 +18,7 @@ import java.net.SocketException;
 @Getter
 @Setter
 public class ClientHeartbeatThread extends Thread {
-    private static final Logger log = LogManager.getLogger();
+    private static final Logger log = LogManager.getLogger("org.vladproj.client.connection.ClientHeartbeatThread");
     private static final String EMPTY = "";
     private static final Long HEARTBEAT_TIME_MS = 5000L;
     private static final VoiceUdpPacketSerializer SERIALIZER = new VoiceUdpPacketSerializer();
@@ -59,14 +59,14 @@ public class ClientHeartbeatThread extends Thread {
             try {
                 socket.send(packet);
                 Thread.sleep(HEARTBEAT_TIME_MS);
-                log.info("Heartbeat packet from {} is sent", pingPacket.getSrcUsername());
+               // log.info("Heartbeat packet from {} is sent", pingPacket.getSrcUsername());
             } catch (IOException ioe) {
                 if (!running) {
                     break;
                 }
                 throw new DatagramSocketException(ioe);
             } catch (InterruptedException ie) {
-                log.warn("Thread {} is interrupted by some thread", getName());
+                //log.warn("Thread {} is interrupted by some thread", getName());
                 Thread.currentThread().interrupt();
                 break;
             }

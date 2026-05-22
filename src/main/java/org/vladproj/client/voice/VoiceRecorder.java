@@ -1,6 +1,9 @@
 package org.vladproj.client.voice;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.TargetDataLine;
 import java.io.ByteArrayOutputStream;
 
 public class VoiceRecorder {

@@ -8,7 +8,7 @@ import javax.sound.sampled.*;
 import java.util.Arrays;
 
 public class VoiceCaptureThread extends Thread {
-    private static final Logger log = LogManager.getLogger();
+    private static final Logger log = LogManager.getLogger("org.vladproj.client.voice.VoiceCaptureThread");
     private static final int BUFFER_LENGTH = 1024;
     private final ClientUdpSender sender;
     private final String targetUsername;
