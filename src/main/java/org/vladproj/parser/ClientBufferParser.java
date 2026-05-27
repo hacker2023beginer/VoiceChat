@@ -1,13 +1,13 @@
 package org.vladproj.parser;
 
+import java.util.Optional;
+
 public class ClientBufferParser {
-    public String[] parseClient(String buffer) {
-        String[] data = buffer.split(" ");
-        try {
-            Integer.valueOf(data[2]);
-        } catch (Exception e) {
-            return null;
+    public Optional<String[]> parseClient(String buffer) {
+        String[] data = buffer.split(" ", 3);
+        if (data.length < 3) {
+            return Optional.empty();
         }
-        return data;
+        return Optional.of(data);
     }
 }

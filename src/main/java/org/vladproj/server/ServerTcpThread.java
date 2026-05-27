@@ -4,31 +4,44 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vladproj.entity.ClientInfo;
 import org.vladproj.entity.UserAction;
+import org.vladproj.exception.ServerTcpException;
 import org.vladproj.parser.ClientBufferParser;
+import org.vladproj.server.util.FindUserUtil;
 
-import java.io.*;
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class ServerTcpThread extends Server {
+public class ServerTcpThread extends ServerRepository {
     private static final Logger log = LogManager.getLogger();
     private static final ClientBufferParser parser = new ClientBufferParser();
     private static final int THREAD_NUM = 5;
-    private static final int TCP_SOCKET_PORT = 5000;
+    public static final int TCP_SOCKET_PORT = 5000;
     private ExecutorService executor;
     private ServerSocket serverSocket;
     private volatile boolean isRunning = true;
-
 
     public ServerTcpThread(String name) {
         super(name);
         try {
             this.serverSocket = new ServerSocket(TCP_SOCKET_PORT);
         } catch (IOException e) {
-            log.fatal("Cannot start client with server_port {}", TCP_SOCKET_PORT);
-            throw new RuntimeException(e);
+            log.fatal("Cannot start server with tcp port {}", TCP_SOCKET_PORT);
+            throw new ServerTcpException(e);
         }
         executor = Executors.newFixedThreadPool(THREAD_NUM);
         try {
@@ -40,11 +53,11 @@ public class ServerTcpThread extends Server {
     }
 
     public boolean doLogin(String username, ClientInfo clientInfo) {
-        if (clients.containsKey(username)) {
+        ClientInfo value = clients.putIfAbsent(username, clientInfo);
+        if (value != null) {
             log.warn("There is user in hashmap with username: {}", username);
             return false;
         }
-        clients.put(username, clientInfo);
         log.info("Add user {} successful", username);
         return true;
     }
@@ -59,30 +72,27 @@ public class ServerTcpThread extends Server {
         return true;
     }
 
+    @Override
     public void run() {
-        log.info("Сервер TCP запущен и ожидает подключений...");
-
+        log.info("TCP server is started and waiting for clients...");
         try {
             while (isRunning) {
                 Socket clientSocket = serverSocket.accept();
                 executor.submit(() -> handleClient(clientSocket));
             }
         } catch (SocketException e) {
-            if (!isRunning) {
-                log.info("Сервер успешно остановлен.");
-            } else {
-                log.error("Ошибка сокета: ", e);
+            if (isRunning) {
+                log.error("Socket error: ", e);
             }
         } catch (IOException e) {
-            log.error("Ошибка ввода-вывода: ", e);
+            log.error("IO error: ", e);
         } finally {
             executor.shutdown();
             try {
-                if (!executor.awaitTermination(20, TimeUnit.SECONDS)){
+                if (!executor.awaitTermination(20, TimeUnit.SECONDS)) {
                     executor.shutdownNow();
                 }
             } catch (InterruptedException e) {
-                log.fatal("Программа завершена извне", e);
                 executor.shutdownNow();
                 Thread.currentThread().interrupt();
             }
@@ -96,55 +106,75 @@ public class ServerTcpThread extends Server {
 
             String line = reader.readLine();
             if (line == null || line.isBlank()) {
-                log.error("Получено пустое сообщение от {}", clientSocket.getInetAddress());
                 writer.println("Error empty message");
                 return;
             }
 
-            //data[0] - method type; data[1] - username; data[2] - port
-            String[] data = parser.parseClient(line);
-            if (data == null || data.length < 3) {
-                log.error("Некорректный формат данных: {}", line);
+            Optional<String[]> optionalData = parser.parseClient(line);
+            if (optionalData.isEmpty() || optionalData.get().length < 3) {
                 writer.println("Error incorrect packet data");
                 return;
             }
 
-            UserAction.find(data[0]).ifPresentOrElse(
-                    action -> {
-                        ClientInfo client = new ClientInfo(clientSocket.getInetAddress(), Integer.parseInt(data[2]));
-                        try {
-                            process(action, data[1], client);
-                        } catch (IllegalArgumentException e) {
-                            writer.println("Error illegal function");
-                        }
-                    },
-                    () -> {
-                        log.error("Неизвестное действие: {}", data[0]);
-                        writer.println("Error incorrect packet type");
-                    }
-            );
+            String[] data = optionalData.get();
+            Optional<UserAction> optionalAction = UserAction.find(data[0]);
+            if (optionalAction.isEmpty()) {
+                writer.println("Error incorrect packet type");
+                return;
+            }
+
+            UserAction action = optionalAction.get();
+            if (action == UserAction.SEARCH_USERS) {
+                writer.println("OK " + String.join(",", findUsers(data[1], data[2])));
+                return;
+            }
+
+            int udpPort;
+            try {
+                udpPort = Integer.parseInt(data[2]);
+            } catch (NumberFormatException e) {
+                writer.println("Error incorrect port");
+                return;
+            }
+            ClientInfo client = new ClientInfo(clientSocket.getInetAddress(), udpPort, System.currentTimeMillis());
+            if (!process(action, data[1], client)) {
+                writer.println("Error user already exist");
+                return;
+            }
             writer.println("OK operation complete successful");
         } catch (IOException e) {
-            log.error("Ошибка при работе с клиентом: ", e);
-            e.printStackTrace();
+            log.error("Error while handling client", e);
+        } catch (IllegalArgumentException e) {
+            log.error("Incorrect client request", e);
         }
+    }
+
+    private List<String> findUsers(String currentUsername, String prefix) {
+        String normalizedPrefix = "*".equals(prefix) ? "" : prefix;
+        FindUserUtil findUserUtil = new FindUserUtil();
+        clients.keySet().stream()
+                .filter(username -> !username.equals(currentUsername))
+                .forEach(findUserUtil::insert);
+        List<String> foundUsers = new ArrayList<>(findUserUtil.searchPrefix(normalizedPrefix));
+        Collections.sort(foundUsers);
+        return foundUsers;
     }
 
     public boolean process(UserAction action, String username, ClientInfo client) {
         switch (action) {
             case REGISTER -> {
-                if (!doLogin(username, client)){
+                if (!doLogin(username, client)) {
                     log.error("Login method doesn't complete correct");
                     return false;
                 }
             }
-            case LOGOUT   -> {
-                if (!doLogout(username)){
+            case LOGOUT -> {
+                if (!doLogout(username)) {
                     log.error("Logout method doesn't complete correct");
                     return false;
                 }
             }
-            default       -> throw new IllegalArgumentException("Unexpected value: " + action);
+            default -> throw new IllegalArgumentException("Unexpected value: " + action);
         }
         return true;
     }
@@ -156,7 +186,7 @@ public class ServerTcpThread extends Server {
             serverSocket.close();
             log.info("Thread {} is interrupted", Thread.currentThread().getName());
         } catch (IOException e) {
-            log.error("Thread {} is crushed", Thread.currentThread().getName());
+            log.error("Thread {} is crashed", Thread.currentThread().getName());
             Thread.currentThread().interrupt();
         }
     }
