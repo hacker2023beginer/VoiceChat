@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="VoiceChat:jar" />
+    </artifacts-to-build>
+  </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="a737d3c6-e514-476e-bded-cbc1b33eb5f9" name="Changes" comment="feat(core): implement voice chat connection and UI&#10;&#10;This major update introduces the core functionality for the voice chat system. It includes the implementation of TCP/UDP connection handling, heartbeat mechanisms, and a comprehensive graphical user interface.&#10;&#10;- Implement ClientSession, ClientTcp, and ClientUdp handlers&#10;- Add VoiceCaptureThread and VoiceRecorder for audio processing&#10;- Develop VoiceChatUI, SettingsDialog, and VoiceMessagePanel&#10;- Include necessary JRE runtime configurations and legal documentation&#10;- Remove legacy message data and redundant connection logic">
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/vladproj/client/connection/ClientTcp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/vladproj/client/connection/ClientTcp.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Enum" />
+        <option value="Interface" />
+        <option value="JUnit5 Test Class" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="ProjectErrors" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="3CFiRnUMOtP4Yot4XpikrgrOOvv" />
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.App.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Client GUI.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Client2.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Server.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ClientCleanThreadTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ServerClientCleanThreadTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.TcpIntegrationTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.UdpIntegrationTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.Unnamed.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.VoiceCaptureThreadTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.VoiceUdpPacketSerializerTest.executor&quot;: &quot;Run&quot;,
+    &quot;Maven. [org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit5&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/КСиС/kursovaya/VoiceChat — копия — копия&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;aigit.settings&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\КСиС\kursovaya\VoiceChat — копия\src\main\java\org\vladproj" />
+      <recent name="D:\КСиС\kursovaya\VoiceChat — копия\src\main\java\trash" />
+    </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\КСиС\kursovaya\VoiceChat — копия" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="org.vladproj.server" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="org.vladproj.client.voice" />
+      <recent name="org.vladproj.server" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.Server">
+    <configuration name="Client GUI" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="org.vladproj.client.main.Main" />
+      <module name="VoiceChat" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Client2" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="org.vladproj.client.main.Main" />
+      <module name="VoiceChat" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Server" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="org.vladproj.App" />
+      <module name="VoiceChat" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ServerClientCleanThreadTest" type="JUnit" factoryName="JUnit" nameIsGenerated="true">
+      <module name="VoiceChat" />
+      <option name="PACKAGE_NAME" value="org.vladproj.server" />
+      <option name="MAIN_CLASS_NAME" value="org.vladproj.server.ServerClientCleanThreadTest" />
+      <option name="METHOD_NAME" value="" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Application.Client GUI" />
+      <item itemvalue="Application.Client2" />
+      <item itemvalue="Application.Server" />
+      <item itemvalue="JUnit.ServerClientCleanThreadTest" />
+    </list>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9f38398b9061-18abd8497189-intellij.indexing.shared.core-IU-241.14494.240" />
+        <option value="bundled-js-predefined-1d06a55b98c1-74d2a5396914-JavaScript-IU-241.14494.240" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a737d3c6-e514-476e-bded-cbc1b33eb5f9" name="Changes" comment="" />
+      <created>1775987714779</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1775987714779</updated>
+      <workItem from="1775987715888" duration="28862000" />
+      <workItem from="1776163313984" duration="8163000" />
+      <workItem from="1776259581227" duration="304000" />
+      <workItem from="1777535402488" duration="12334000" />
+      <workItem from="1778094816585" duration="5458000" />
+      <workItem from="1778101109541" duration="2995000" />
+      <workItem from="1778150504390" duration="7960000" />
+      <workItem from="1778452403907" duration="337000" />
+      <workItem from="1778490285897" duration="4030000" />
+      <workItem from="1778568598914" duration="4042000" />
+      <workItem from="1778581585043" duration="1834000" />
+      <workItem from="1778602701191" duration="9082000" />
+      <workItem from="1778679008613" duration="1791000" />
+      <workItem from="1778700102578" duration="599000" />
+      <workItem from="1778749580205" duration="6668000" />
+      <workItem from="1778873060167" duration="8030000" />
+      <workItem from="1779136404320" duration="13366000" />
+      <workItem from="1779299890191" duration="18298000" />
+      <workItem from="1779391352100" duration="8572000" />
+      <workItem from="1779554479706" duration="13033000" />
+      <workItem from="1779738376269" duration="20280000" />
+    </task>
+    <task id="LOCAL-00001" summary="feat(core): implement UDP communication and client logic&#10;&#10;This change introduces core UDP networking capabilities including:&#10;- Added UdpSender and UdpReceiver for audio/data transmission.&#10;- Implemented custom exceptions for TCP and UDP communication.&#10;- Integrated Log4j2 for improved logging.&#10;- Added comprehensive TCP and UDP integration tests.&#10;- Updated project configuration in pom.xml.">
+      <option name="closed" value="true" />
+      <created>1778102082129</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1778102082129</updated>
+    </task>
+    <task id="LOCAL-00002" summary="feat(core): implement heartbeat mechanism and packet refactoring&#10;&#10;This change introduces a HeartbeatThread to maintain client connections and refactors the UDP packet handling logic.&#10;&#10;- Add HeartbeatThread for periodic client-server health checks&#10;- Refactor ClientInfo with Lombok annotations and lastSeen timestamp&#10;- Replace VoiceBufferParser with VoiceUdpPacketSerializer logic&#10;- Rename UdpReceiverException to DatagramSocketException&#10;- Update server UDP thread to handle new packet serialization&#10;- Update log4j2 configuration and pom.xml dependencies">
+      <option name="closed" value="true" />
+      <created>1778573128137</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1778573128137</updated>
+    </task>
+    <task id="LOCAL-00003" summary="feat(core): implement heartbeat and client cleanup&#10;&#10;This change introduces a heartbeat mechanism for both client and server to maintain active connections. It includes a new ClientHeartbeatThread and a ServerClientCleanThread to handle stale client removal. Additionally, several core networking classes were renamed for consistency, and corresponding integration tests were added.&#10;&#10;- Add ClientHeartbeatThread for periodic UDP pings&#10;- Add ServerClientCleanThread to remove inactive clients&#10;- Refactor and rename ClientTcp, ClientUdpReceiver, and ClientUdpSender&#10;- Update ServerUdpThread to handle heartbeat packets&#10;- Add unit tests for client cleanup logic&#10;- Update log4j2 configuration for better debugging">
+      <option name="closed" value="true" />
+      <created>1778789887735</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1778789887735</updated>
+    </task>
+    <task id="LOCAL-00004" summary="feat(core): implement voice message packet handling&#10;&#10;- Add VoiceMessage entity for packet management&#10;- Introduce VoiceMessagesSerializer and Deserializer&#10;- Update ServerRepository with messages concurrent map&#10;- Refactor ClientUdpReceiver to support new packet logic">
+      <option name="closed" value="true" />
+      <created>1779183710300</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1779183710300</updated>
+    </task>
+    <task id="LOCAL-00005" summary="feat(core): implement voice chat UI and messaging system&#10;&#10;This commit introduces a comprehensive graphical user interface for the voice chat client, including the main chat window, settings dialog, and voice message panels. Key functional additions include:&#10;&#10;- Added VoiceChatUI and SettingsDialog for user interaction.&#10;- Implemented ClientSession and ClientSettings to manage connections.&#10;- Introduced VoiceRecorder, VoicePlayer, and MessagePersistenceService for handling audio data.&#10;- Refactored connection logic by moving heartbeat and protocol handlers to a dedicated connection package.&#10;- Updated server-side UDP handling and repository logic to support new client features.">
+      <option name="closed" value="true" />
+      <created>1779306588702</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1779306588703</updated>
+    </task>
+    <task id="LOCAL-00006" summary="feat(core): implement voice chat connection and UI&#10;&#10;This major update introduces the core functionality for the voice chat system. It includes the implementation of TCP/UDP connection handling, heartbeat mechanisms, and a comprehensive graphical user interface.&#10;&#10;- Implement ClientSession, ClientTcp, and ClientUdp handlers&#10;- Add VoiceCaptureThread and VoiceRecorder for audio processing&#10;- Develop VoiceChatUI, SettingsDialog, and VoiceMessagePanel&#10;- Include necessary JRE runtime configurations and legal documentation&#10;- Remove legacy message data and redundant connection logic">
+      <option name="closed" value="true" />
+      <created>1779461251649</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1779461251649</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="dev" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="feat-packets" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Add TCP client" />
+    <MESSAGE value="feat(core): implement UDP communication and client logic&#10;&#10;This change introduces core UDP networking capabilities including:&#10;- Added UdpSender and UdpReceiver for audio/data transmission.&#10;- Implemented custom exceptions for TCP and UDP communication.&#10;- Integrated Log4j2 for improved logging.&#10;- Added comprehensive TCP and UDP integration tests.&#10;- Updated project configuration in pom.xml." />
+    <MESSAGE value="feat(core): implement heartbeat mechanism and packet refactoring&#10;&#10;This change introduces a HeartbeatThread to maintain client connections and refactors the UDP packet handling logic.&#10;&#10;- Add HeartbeatThread for periodic client-server health checks&#10;- Refactor ClientInfo with Lombok annotations and lastSeen timestamp&#10;- Replace VoiceBufferParser with VoiceUdpPacketSerializer logic&#10;- Rename UdpReceiverException to DatagramSocketException&#10;- Update server UDP thread to handle new packet serialization&#10;- Update log4j2 configuration and pom.xml dependencies" />
+    <MESSAGE value="feat(core): implement heartbeat and client cleanup&#10;&#10;This change introduces a heartbeat mechanism for both client and server to maintain active connections. It includes a new ClientHeartbeatThread and a ServerClientCleanThread to handle stale client removal. Additionally, several core networking classes were renamed for consistency, and corresponding integration tests were added.&#10;&#10;- Add ClientHeartbeatThread for periodic UDP pings&#10;- Add ServerClientCleanThread to remove inactive clients&#10;- Refactor and rename ClientTcp, ClientUdpReceiver, and ClientUdpSender&#10;- Update ServerUdpThread to handle heartbeat packets&#10;- Add unit tests for client cleanup logic&#10;- Update log4j2 configuration for better debugging" />
+    <MESSAGE value="feat(core): implement voice message packet handling&#10;&#10;- Add VoiceMessage entity for packet management&#10;- Introduce VoiceMessagesSerializer and Deserializer&#10;- Update ServerRepository with messages concurrent map&#10;- Refactor ClientUdpReceiver to support new packet logic" />
+    <MESSAGE value="feat(core): implement voice chat UI and messaging system&#10;&#10;This commit introduces a comprehensive graphical user interface for the voice chat client, including the main chat window, settings dialog, and voice message panels. Key functional additions include:&#10;&#10;- Added VoiceChatUI and SettingsDialog for user interaction.&#10;- Implemented ClientSession and ClientSettings to manage connections.&#10;- Introduced VoiceRecorder, VoicePlayer, and MessagePersistenceService for handling audio data.&#10;- Refactored connection logic by moving heartbeat and protocol handlers to a dedicated connection package.&#10;- Updated server-side UDP handling and repository logic to support new client features." />
+    <MESSAGE value="feat(core): implement voice chat connection and UI&#10;&#10;This major update introduces the core functionality for the voice chat system. It includes the implementation of TCP/UDP connection handling, heartbeat mechanisms, and a comprehensive graphical user interface.&#10;&#10;- Implement ClientSession, ClientTcp, and ClientUdp handlers&#10;- Add VoiceCaptureThread and VoiceRecorder for audio processing&#10;- Develop VoiceChatUI, SettingsDialog, and VoiceMessagePanel&#10;- Include necessary JRE runtime configurations and legal documentation&#10;- Remove legacy message data and redundant connection logic" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(core): implement voice chat connection and UI&#10;&#10;This major update introduces the core functionality for the voice chat system. It includes the implementation of TCP/UDP connection handling, heartbeat mechanisms, and a comprehensive graphical user interface.&#10;&#10;- Implement ClientSession, ClientTcp, and ClientUdp handlers&#10;- Add VoiceCaptureThread and VoiceRecorder for audio processing&#10;- Develop VoiceChatUI, SettingsDialog, and VoiceMessagePanel&#10;- Include necessary JRE runtime configurations and legal documentation&#10;- Remove legacy message data and redundant connection logic" />
+  </component>
+</project>
