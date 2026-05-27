@@ -3,7 +3,7 @@ package org.vladproj.entity;
 import java.util.Optional;
 
 public enum UserAction {
-    REGISTER, LOGOUT;
+    REGISTER, LOGOUT, SEARCH_USERS;
 
     public static Optional<UserAction> find(String type){
         if (type == null || type.isBlank()){

@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.vladproj.entity.ClientInfo;
 import org.vladproj.entity.VoiceUdpPacket;
+import org.vladproj.persistence.MessagePersistenceService;
 import org.vladproj.serializer.VoiceUdpPacketSerializer;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.util.Arrays;
 public class ServerUdpThread extends ServerRepository {
     private static final Logger log = LogManager.getLogger();
     private static final VoiceUdpPacketSerializer serializer = new VoiceUdpPacketSerializer();
+    private static final MessagePersistenceService persistence = new MessagePersistenceService();
     public static final int UDP_SOCKET_PORT = 4445;
     private static final int BUFFER_LENGTH = 2048;
     private volatile boolean isRunning = true;
@@ -23,6 +25,7 @@ public class ServerUdpThread extends ServerRepository {
 
     public ServerUdpThread(String name) {
         super(name);
+        messages = persistence.load();
         try {
             socket = new DatagramSocket(UDP_SOCKET_PORT);
         } catch (SocketException e) {
@@ -39,15 +42,12 @@ public class ServerUdpThread extends ServerRepository {
 
     @Override
     public void run() {
-        log.info("Start sending voice message...");
+        log.info("UDP server started on port {}", UDP_SOCKET_PORT);
         byte[] voiceBuffer = new byte[BUFFER_LENGTH];
         while (isRunning) {
             try {
                 DatagramPacket packet = new DatagramPacket(voiceBuffer, BUFFER_LENGTH);
                 socket.receive(packet);
-                InetAddress senderAddr = packet.getAddress();
-                int senderPort = packet.getPort();
-                log.info("Sender address: {}. Sender port: {}", senderAddr, senderPort);
                 handlePacket(packet);
             } catch (IOException e) {
                 if (!isRunning) {
@@ -61,42 +61,37 @@ public class ServerUdpThread extends ServerRepository {
     }
 
     private void handlePacket(DatagramPacket packet) {
-        log.info("Method handlePacket started");
         byte[] raw = Arrays.copyOf(packet.getData(), packet.getLength());
         VoiceUdpPacket voiceUdpPacket = serializer.deserialize(raw);
         switch (voiceUdpPacket.getPacketType()) {
-            case VOICE -> handleVoicePacket(voiceUdpPacket);
+            case VOICE -> forwardPacket(voiceUdpPacket);
             case PING -> handlePingPacket(voiceUdpPacket);
             case DISCONNECT -> handleDisconnectPacket(voiceUdpPacket);
+            case CALL_REQUEST, CALL_ACCEPT, CALL_REJECT, CALL_BUSY, CALL_END -> forwardPacket(voiceUdpPacket);
             default -> {}
         }
-        log.info("Method handlePacket ended");
     }
 
-    private void handleVoicePacket(VoiceUdpPacket voiceUdpPacket) {
-        log.info("UDP server handle method for voice packet is started");
+    private void forwardPacket(VoiceUdpPacket voiceUdpPacket) {
         String targetUsername = voiceUdpPacket.getDestUsername();
         ClientInfo targetClientInfo = clients.get(targetUsername);
         if (targetClientInfo == null) {
             log.warn("There is no user in hashmap with username: {}", targetUsername);
             return;
         }
-        byte[] audioData = serializer.serialize(voiceUdpPacket);
-        DatagramPacket sendingPacket = new DatagramPacket(audioData, audioData.length, targetClientInfo.getAddress(), targetClientInfo.getUdpPort());
+        byte[] data = serializer.serialize(voiceUdpPacket);
+        DatagramPacket sendingPacket = new DatagramPacket(data, data.length, targetClientInfo.getAddress(), targetClientInfo.getUdpPort());
         try {
             socket.send(sendingPacket);
-            log.info("Send data successfully");
         } catch (IOException e) {
             if (!isRunning) {
                 return;
             }
             e.printStackTrace();
         }
-        log.info("Handle method for voice packet is ended");
     }
 
     private void handlePingPacket(VoiceUdpPacket packet) {
-        log.info("Handle heartbeat packet");
         String srcUsername = packet.getSrcUsername();
         ClientInfo clientInfo = clients.get(srcUsername);
         if (clientInfo == null) {
@@ -107,14 +102,14 @@ public class ServerUdpThread extends ServerRepository {
     }
 
     private void handleDisconnectPacket(VoiceUdpPacket packet) {
-        log.info("Handle disconnect packet");
         clients.remove(packet.getSrcUsername());
-        log.info("Disconnect user {}", packet.getSrcUsername());
+        log.info("User {} disconnected", packet.getSrcUsername());
     }
 
     public void shutdown() {
         isRunning = false;
         socket.close();
+        persistence.save(messages);
     }
 
     public DatagramSocket getSocket() {

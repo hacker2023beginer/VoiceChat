@@ -2,26 +2,30 @@ package org.vladproj.serializer;
 
 import org.vladproj.entity.VoiceMessage;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class VoiceMessagesDeserializer {
 
-    public static Map<String, VoiceMessage> deserialize(byte[] bytes) throws IOException {
+    public static Map<String, CopyOnWriteArrayList<VoiceMessage>> deserialize(byte[] bytes) throws IOException {
         DataInputStream data = new DataInputStream(new ByteArrayInputStream(bytes));
 
         int size = data.readInt();
-        Map<String, VoiceMessage> map = new HashMap<>();
+        Map<String, CopyOnWriteArrayList<VoiceMessage>> map = new HashMap<>();
 
         for (int i = 0; i < size; i++) {
             String key = readString(data);
-            VoiceMessage msg = readVoiceMessage(data);
-            map.put(key, msg);
+
+            int listSize = data.readInt();
+            CopyOnWriteArrayList<VoiceMessage> list = new CopyOnWriteArrayList<>();
+
+            for (int j = 0; j < listSize; j++) {
+                list.add(readVoiceMessage(data));
+            }
+
+            map.put(key, list);
         }
 
         return map;
@@ -52,4 +56,3 @@ public class VoiceMessagesDeserializer {
                 .build();
     }
 }
-
