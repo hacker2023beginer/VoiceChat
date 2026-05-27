@@ -10,7 +10,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a737d3c6-e514-476e-bded-cbc1b33eb5f9" name="Changes" comment="feat(core): implement voice chat connection and UI&#10;&#10;This major update introduces the core functionality for the voice chat system. It includes the implementation of TCP/UDP connection handling, heartbeat mechanisms, and a comprehensive graphical user interface.&#10;&#10;- Implement ClientSession, ClientTcp, and ClientUdp handlers&#10;- Add VoiceCaptureThread and VoiceRecorder for audio processing&#10;- Develop VoiceChatUI, SettingsDialog, and VoiceMessagePanel&#10;- Include necessary JRE runtime configurations and legal documentation&#10;- Remove legacy message data and redundant connection logic">
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/vladproj/client/connection/ClientTcp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/vladproj/client/connection/ClientTcp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,40 +40,40 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.App.executor&quot;: &quot;Run&quot;,
-    &quot;Application.Client GUI.executor&quot;: &quot;Run&quot;,
-    &quot;Application.Client2.executor&quot;: &quot;Run&quot;,
-    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
-    &quot;Application.Server.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.ClientCleanThreadTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.ServerClientCleanThreadTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.TcpIntegrationTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.UdpIntegrationTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.Unnamed.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.VoiceCaptureThreadTest.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.VoiceUdpPacketSerializerTest.executor&quot;: &quot;Run&quot;,
-    &quot;Maven. [org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
-    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit5&quot;,
-    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/КСиС/kursovaya/VoiceChat — копия — копия&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;aigit.settings&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.App.executor": "Run",
+    "Application.Client GUI.executor": "Run",
+    "Application.Client2.executor": "Run",
+    "Application.Main.executor": "Run",
+    "Application.Server.executor": "Run",
+    "JUnit.ClientCleanThreadTest.executor": "Run",
+    "JUnit.ServerClientCleanThreadTest.executor": "Run",
+    "JUnit.TcpIntegrationTest.executor": "Run",
+    "JUnit.UdpIntegrationTest.executor": "Run",
+    "JUnit.Unnamed.executor": "Run",
+    "JUnit.VoiceCaptureThreadTest.executor": "Run",
+    "JUnit.VoiceUdpPacketSerializerTest.executor": "Run",
+    "Maven. [org.apache.maven.plugins:maven-archetype-plugin:RELEASE:generate].executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/КСиС/kursovaya/VoiceChat — копия",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Artifacts",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "aigit.settings",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\КСиС\kursovaya\VoiceChat — копия\src\main\java\org\vladproj" />
@@ -168,7 +168,7 @@
       <workItem from="1779299890191" duration="18298000" />
       <workItem from="1779391352100" duration="8572000" />
       <workItem from="1779554479706" duration="13033000" />
-      <workItem from="1779738376269" duration="20280000" />
+      <workItem from="1779738376269" duration="21035000" />
     </task>
     <task id="LOCAL-00001" summary="feat(core): implement UDP communication and client logic&#10;&#10;This change introduces core UDP networking capabilities including:&#10;- Added UdpSender and UdpReceiver for audio/data transmission.&#10;- Implemented custom exceptions for TCP and UDP communication.&#10;- Integrated Log4j2 for improved logging.&#10;- Added comprehensive TCP and UDP integration tests.&#10;- Updated project configuration in pom.xml.">
       <option name="closed" value="true" />
