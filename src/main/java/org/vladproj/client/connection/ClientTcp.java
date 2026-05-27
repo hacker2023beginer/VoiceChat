@@ -61,6 +61,7 @@ public class ClientTcp {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
         finally {
             try {
